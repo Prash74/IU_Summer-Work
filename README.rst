@@ -1,7 +1,4 @@
 1. BenchMark API Utilities
-=======
- About
-=======
 
 This package provides an API and utilities for benchmarking various
 cloud platforms.  The api is intended to support arbitrary benchmarks,
@@ -19,8 +16,6 @@ The API is provided in `bench.py <./cloudmesh_bench_api/bench.py>`_
 2. Face Detection
 
 Build an automated face detection system to detect faces in images obtained from videos with OpenCV and big data open source software applications.
-
-.. image:: cloud.jpg
 
 ------------
  Algorithms
