@@ -1,3 +1,4 @@
+1. BenchMark API Utilities
 =======
  About
 =======
@@ -15,42 +16,22 @@ with a few constraints:
 
 The API is provided in `bench.py <./cloudmesh_bench_api/bench.py>`_
 
+2. Face Detection
 
+Build an automated face detection system to detect faces in images obtained from videos with OpenCV and big data open source software applications.
 
-==============
- Installation
-==============
+.. image:: cloud.jpg
 
-.. tip::
+------------
+ Algorithms
+------------
 
-   We recommend using a virtual environment::
+- OpenCV - provide face detection algorithms
 
-     $ virtualenv venv
-     $ source venv/bin/activate
+- HIPI - transform image data to the format used by MapReduce function
 
+- MongoDB Java Driver - provides interaction with MongoDB
 
-#. ``git clone git@github.com/cloudmesh/bench-api-utils``
-#. ``pip install -r requirements.txt``
-#. ``pip install .``
+3. HiBench Deployment
 
-
-==========
- Examples
-==========
-
-TBD: this section to be filled out at a later date.
-
-
-=========
- License
-=========
-
-Apache License, Version 2.0
-
-==============
- Contributing
-==============
-
-Please send Pull Requests via GitHub.
-
-
+HiBench-ML: Automated deployment of Intel HiBench Machine Learning benchmarks
