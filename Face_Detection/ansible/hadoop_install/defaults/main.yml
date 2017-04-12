@@ -1,0 +1,21 @@
+---
+
+hadoop_version: 2.7.1
+hadoop_archive_ext: .tar.gz
+hadoop_url: >-
+  http://www.us.apache.org/dist/hadoop/common/hadoop-{{ hadoop_version }}/hadoop-{{ hadoop_version }}{{ hadoop_archive_ext }}
+hadoop_archive_sha256:
+  2.6.1: 7ec1aa9775bb65f3d38aace904256e1408fd6b7a60562872adbac52f639e74f7
+  2.7.1: 991dc34ea42a80b236ca46ff5d207107bcc844174df0441777248fdb6d8c9aa0
+hadoop_download_timeout: 10
+
+hadoop_archive_name: "hadoop-{{ hadoop_version }}{{ hadoop_archive_ext }}"
+hadoop_extracted_name: "hadoop-{{ hadoop_version }}"
+hadoop_home_name: hadoop
+
+hadoop_home_dir: /opt
+hadoop_home: "{{ hadoop_home_dir }}/{{ hadoop_home_name }}"
+
+hadoop_yarn_log_dir: /var/log/yarn
+hadoop_user: cc
+hadoop_loglevel: INFO

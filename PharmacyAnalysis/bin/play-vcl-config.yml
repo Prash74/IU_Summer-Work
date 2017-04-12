@@ -1,0 +1,6 @@
+---
+
+- name: config vcl
+  hosts: localhost
+  roles:
+   - role: vcl_config

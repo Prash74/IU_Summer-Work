@@ -1,0 +1,25 @@
+---
+# tasks file for mongo_install_role
+- name: Import the public key used by the package management system
+  apt_key: keyserver=hkp://keyserver.ubuntu.com:80 id=7F0CEB10 state=present
+
+- name: Add MongoDB repository
+  apt_repository: repo='deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' state=present
+
+- name: Open port 27017 - tcp in the firewall
+  command: "iptables -I INPUT -p tcp --dport {{item}}:{{item}} -j ACCEPT"
+  ignore_errors: yes
+  with_items:
+  - 27017
+  
+- name: Install mongodb
+  apt: pkg=mongodb-org state=latest update_cache=yes  
+  
+- name: set port in mongod.conf
+  action: lineinfile dest=/etc/mongod.conf regexp='port =' line='port = 27017'
+  
+- name: set bind_ip in mongod.conf
+  action: lineinfile dest=/etc/mongod.conf regexp='bind_ip' line='bind_ip = 0.0.0.0'
+
+- name: start mongod
+  service: name=mongod state=restarted

@@ -1,0 +1,19 @@
+---
+# defaults file for app_setup_role
+
+hadoop_version: 2.7.1
+hadoop_archive_ext: .tar.gz
+hadoop_download_timeout: 10
+
+hadoop_home_name: hadoop
+hadoop_home_dir: /opt
+hadoop_home: "{{ hadoop_home_dir }}/{{ hadoop_home_name }}"
+
+hadoop_user: cc
+hadoop_loglevel: INFO
+
+hadoop_app_dir: "/home/{{hadoop_user}}"
+
+image_tar_url: "https://iu.box.com/shared/static/iex6ynf0fwga6ysa2hd155wnn4gaf2cs.gz"
+image_tar_file_name: "images.tar.gz"
+

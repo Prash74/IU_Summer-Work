@@ -1,0 +1,8 @@
+---
+
+- name: Install face detection application for hadoop
+  hosts: all
+  remote_user: cc
+  become: yes
+  roles:
+  - role: app_setup_role

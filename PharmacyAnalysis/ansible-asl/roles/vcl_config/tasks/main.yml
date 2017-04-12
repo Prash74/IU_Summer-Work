@@ -1,0 +1,7 @@
+---
+
+- name: reconfig .cluster.py
+  template: src=cluster.j2 dest={{bds_root}}/.cluster.py
+
+- name: reconfig ansible.cfg
+  template: src=ansible.j2 dest={{bds_root}}/ansible.cfg

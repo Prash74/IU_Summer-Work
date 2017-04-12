@@ -1,0 +1,4 @@
+{% for host in groups['hadoop-slaves'] %}
+    {{ hostvars[host].ansible_hostname }}
+{% endfor %}
+

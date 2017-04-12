@@ -1,0 +1,26 @@
+---
+- hosts: hadoop-master
+  vars:
+    hadoop_user: cc
+    hadoop_cfg_path: /opt/hadoop
+  remote_user: "{{ hadoop_user }}"
+  become: yes
+  tasks:
+  - name: start namenode 
+    command: "{{ hadoop_cfg_path }}/sbin/hadoop-daemon.sh --script hdfs start namenode"
+  - name: start resourcemanager
+    command: "{{ hadoop_cfg_path }}/sbin/yarn-daemon.sh start resourcemanager"
+
+- hosts: hadoop-slaves
+  vars:
+    hadoop_user: cc
+    hadoop_cfg_path: /opt/hadoop
+  remote_user: "{{ hadoop_user }}"
+  become: yes
+  tasks:
+  - name: start datanodes
+    command: "{{ hadoop_cfg_path }}/sbin/hadoop-daemon.sh --script hdfs start datanode"
+
+  - name: start nodemanagers
+    command: "{{ hadoop_cfg_path }}/sbin/yarn-daemon.sh start nodemanager"
+

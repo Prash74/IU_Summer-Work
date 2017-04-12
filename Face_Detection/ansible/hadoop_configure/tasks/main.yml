@@ -1,0 +1,85 @@
+---
+
+- name: ensure configuration directory exists
+  file:
+    path: "{{ hadoop_cfg_path }}"
+    state: directory
+  tags:
+    - hadoop_configure
+    - hadoop
+    - configure
+
+
+- name: clear configuration
+  copy:
+    src: empty-site.xml
+    dest: "{{ hadoop_cfg_path }}/{{ item }}"
+  with_items: "{{ clear_configs }}"
+  notify: fix permissions
+  tags: 
+    - hadoop_configure
+    - hadoop
+    - configure
+
+
+- name: configure core-site.xml
+  lineinfile:
+    dest: "{{ hadoop_cfg_path }}/core-site.xml"
+    insertbefore: "</configuration>"
+    line: "  <property>\n    <name>{{ core_site_name }}</name>\n    <value>hdfs://{{ core_site_value }}/</value>\n  
+</property>\n"
+  notify: fix permissions
+  tags: 
+    - hadoop_configure
+    - hadoop
+    - configure
+
+
+#- name: configure hdfs-site.xml
+#  lineinfile:
+#    dest: "{{ hadoop_cfg_path }}/hdfs-site.xml"
+#    insertbefore: "</configuration>"
+#    line: "  <property>\n    <name>{{ item.key }}</name>\n    <value>{{ item.value 
+#}}</value>\n  </property>\n"
+#  with_dict: "{{ hdfs_site }}"
+#  notify: fix permissions
+#  tags: 
+#    - hadoop_configure
+#    - hadoop
+#    - configure
+
+
+- name: configure yarn-site.xml
+  template: src=yarn-site.xml dest="{{ hadoop_cfg_path }}/yarn-site.xml" owner="{{ hadoop_user}}" group="{{hadoop_user}}"  
+  notify: fix permissions
+  tags: 
+    - hadoop_configure
+    - hadoop
+    - configure
+
+- name: configure mapred-site.xml
+  lineinfile:
+    dest: "{{ hadoop_cfg_path }}/mapred-site.xml"
+    insertbefore: "</configuration>"
+    line: "  <property>\n    <name>{{ mapred_site_name }}</name>\n    <value>{{ mapred_site_value }}</value>\n  </property>\n"
+  notify: fix permissions
+  tags: 
+    - hadoop_configure
+    - hadoop
+    - configure
+
+- name: edit slaves file
+  template: src=slaves dest="{{ hadoop_cfg_path }}/slaves" owner="{{ hadoop_user}}" group="{{hadoop_user}}"  
+
+- name: edit hosts file
+  template: src=hosts dest="/etc/hosts" owner="{{ hadoop_user}}" group="{{hadoop_user}}"
+
+- name: Open port {{item}} - tcp in the firewall
+  command: iptables -I INPUT -p tcp --dport {{item}}:{{item}} -j ACCEPT
+  ignore_errors: yes
+  with_items:
+  - 8088
+  - 8020
+  - 50030
+
+

@@ -1,0 +1,63 @@
+---
+- hosts: hadoop-master
+  vars:
+    hadoop_user: cc
+    hadoop_cfg_path: /opt/hadoop
+  remote_user: "{{ hadoop_user }}"
+  become: yes
+  tasks:
+  - name: stop namenode and resourcemanager 
+    command: "{{ hadoop_cfg_path }}/sbin/hadoop-daemon.sh --script hdfs stop namenode"
+    command: "{{ hadoop_cfg_path }}/sbin/yarn-daemon.sh stop resourcemanager"
+  
+- hosts: hadoop-slaves
+  vars:
+    hadoop_user: cc
+    hadoop_cfg_path: /opt/hadoop
+  remote_user: "{{ hadoop_user }}"
+  become: yes
+  tasks:
+  - name: stop datanodes and nodemangers
+    command: "{{ hadoop_cfg_path }}/sbin/hadoop-daemon.sh --script hdfs stop datanode"
+    command: "{{ hadoop_cfg_path }}/sbin/yarn-daemon.sh stop nodemanager"
+
+
+- hosts: hadoop-master
+  vars:
+    hadoop_user: cc
+    hadoop_cfg_path: /opt/hadoop
+  remote_user: "{{ hadoop_user }}"
+  become: yes
+  tasks:
+  
+  - name: delete storage
+    command: "rm -rf /tmp/hadoop-*"
+  - name: reinit dfs
+    command: "{{ hadoop_cfg_path }}/bin/hdfs namenode -format; yes"
+  - name: restart namenode and resourcemanager
+    command: "{{ hadoop_cfg_path }}/sbin/hadoop-daemon.sh --script hdfs start namenode"
+    command: "{{ hadoop_cfg_path }}/sbin/yarn-daemon.sh start resourcemanager"
+
+
+- hosts: hadoop-slaves
+  vars:
+    hadoop_user: cc
+    hadoop_cfg_path: /opt/hadoop
+  remote_user: "{{ hadoop_user }}"
+  become: yes
+  tasks:
+  - name: start datanodes and nodemanagers
+    command: "{{ hadoop_cfg_path }}/sbin/hadoop-daemon.sh --script hdfs start datanode"
+    command: "{{ hadoop_cfg_path }}/sbin/yarn-daemon.sh start nodemanager"
+
+
+- hosts: hadoop-master
+  vars:
+    hadoop_user: cc
+    hadoop_cfg_path: /opt/hadoop
+  remote_user: "{{ hadoop_user }}"
+  become: yes
+  tasks:  
+  - name: refresh all nodes
+    command: "{{ hadoop_cfg_path }}/bin/hdfs dfsadmin -refreshNodes"
+    command: "{{ hadoop_cfg_path }}/bin/yarn rmadmin -refreshNodes"

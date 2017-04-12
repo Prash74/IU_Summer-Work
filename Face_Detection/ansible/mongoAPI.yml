@@ -1,0 +1,8 @@
+---
+- hosts: hadoop-master
+  vars:
+    hadoop_user: cc
+  remote_user: "{{ hadoop_user }}"
+  become: yes
+  roles:
+  - role: mongoAPI

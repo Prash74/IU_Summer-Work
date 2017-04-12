@@ -1,0 +1,90 @@
+---
+
+- name: install and configure hadoop 
+  hosts: all
+  remote_user: cc
+  become: yes
+  roles:
+  - role: java_install_role
+  - role: hadoop_install
+  - role: hadoop_configure
+
+    hadoop_cfg_path: /opt/hadoop/etc/hadoop
+
+    clear_configs:
+      - core-site.xml
+      - hdfs-site.xml
+      - yarn-site.xml
+      - mapred-site.xml
+  tasks:
+  - name: set HDFS_HOST env. var
+    lineinfile:
+      dest: "~/.bashrc"
+      line: "export {{ item }}"
+      create: yes
+    with_items:
+      - HDFS_HOST={{ hostvars[groups['hadoop-master'][0]].ansible_hostname }}
+      
+- name: install mongo
+  hosts: mongo-host
+  remote_user: cc
+  become: yes
+  roles:
+  - role: mongo_install_role
+
+- name: set mongo host env. variable
+  hosts: all
+  remote_user: cc
+  become: yes
+  tasks:
+  - name: set var
+    lineinfile:
+      dest: "~/.bashrc"
+      line: "export {{ item }}"
+      create: yes
+    with_items:
+      - MONGO_HOST={{ hostvars[groups['mongo-host'][0]].ansible_hostname }}
+
+- name: start hadoop file system
+  hosts: hadoop-master
+  vars:
+    hadoop_user: cc
+    hadoop_cfg_path: /opt/hadoop
+  remote_user: "{{ hadoop_user }}"
+  become: yes
+  tasks:
+  - name: init hdfs 
+    command: "{{ hadoop_cfg_path }}/bin/hdfs namenode -format"
+
+- name : start yarn, hdfs
+  hosts: hadoop-master
+  vars:
+    hadoop_user: cc
+    hadoop_cfg_path: /opt/hadoop
+  remote_user: "{{ hadoop_user }}"
+  become: yes
+  tasks:
+  - name: start namenode 
+    command: "{{ hadoop_cfg_path }}/sbin/hadoop-daemon.sh --script hdfs start namenode"
+  - name: start resourcemanager
+    command: "{{ hadoop_cfg_path }}/sbin/yarn-daemon.sh start resourcemanager"
+
+- hosts: hadoop-slaves
+  vars:
+    hadoop_user: cc
+    hadoop_cfg_path: /opt/hadoop
+  remote_user: "{{ hadoop_user }}"
+  become: yes
+  tasks:
+  - name: start datanodes
+    command: "{{ hadoop_cfg_path }}/sbin/hadoop-daemon.sh --script hdfs start datanode"
+
+  - name: start nodemanagers
+    command: "{{ hadoop_cfg_path }}/sbin/yarn-daemon.sh start nodemanager"
+
+- name: Install face detection application for hadoop
+  hosts: all
+  remote_user: cc
+  become: yes
+  roles:
+  - role: app_setup_role

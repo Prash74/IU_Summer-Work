@@ -1,0 +1,6 @@
+---
+- name: Copy files to root of master
+  copy: 
+    src: mongo-java-driver-2.11.3.jar 
+    dest: /home/cc
+

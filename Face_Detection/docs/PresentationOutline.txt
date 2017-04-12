@@ -1,0 +1,69 @@
+
+
+Presentation outline:
+
+---MENG'S PART---
+
+I.Project Goal
+
+	Explore big data open source software application stacks and the archetecture.
+	Acquire first-hand experience with big data applications through a project on computer vision (human face detection)  
+	Gain insights into applications performance and functionality.
+
+II. Problem Definition
+	
+	A. Run Open CV face / person recognition on a set of images.
+	B. Run on open source big data software.
+	C. Run in parallel on multiple nodes using Hadoop map reduce.
+	
+	
+III. Useful Background Information
+	I. Face/human detection with X cameras?
+		a. problems...
+			
+			i.  Many inputs -> too much for one machine to process...
+			
+	II. Do it in parallel!
+	III. Use open source big data software to do it!
+	(footnote : for this project, will not be using streaming data, but large list of bmp images.
+	
+IV. Team members
+
+	A. Meng Li
+		i. Map reduce implementation
+		ii. Database
+	B. John Henderson
+		i. OpenCV development
+		ii. Configuration, deployment via Ansible
+		
+---JOHN'S PART---
+
+V. Technical
+	A. list of technologies
+	
+		DevOps: Ansible
+		File System: HDFS
+		Cluster Resource Management: Yarn
+		NoSQL: MongoDB
+		MapReduce: Hadoop
+		Application and analytics: OpenCV
+		
+	B. list of development tools, languages
+	
+		Java / Python
+		Eclipse
+		
+	C. list of dataset and its availability
+		
+		INRIA dataset
+	
+	D. resources to use
+	
+		OpenStack on FutureSystems
+		
+	E. schedule
+	
+	Week 16 - Have openCV running
+	Week 17 - OpenCV running in parallel under Hadoop
+	Week 18 - Deployment with Ansible, integrate database.
+	Week 19 - Final testing, submit project.

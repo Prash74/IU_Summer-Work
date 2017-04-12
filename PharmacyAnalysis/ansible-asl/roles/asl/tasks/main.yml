@@ -1,0 +1,70 @@
+---
+
+- name: make root dir
+  file: "path={{ root_test_dir }}  state=directory"
+- name : make test dir
+  file: "path={{ root_test_dir }}/{{input_dir }}  state=directory"
+
+- name: make build dir
+  file: "path={{ build_root_rem_dir }}  state=directory"
+
+- name: copy over src to compile on remote master0
+  copy: src={{src_code_dir}}  dest={{build_root_rem_dir}}/
+
+- debug: msg={{build_root_rem_dir}}
+- name: build src
+  command: /opt/maven/bin/mvn package chdir={{build_root_rem_dir}}/asl-hadoop-bd
+
+- name: fetch asl
+  get_url:
+    url: "{{ pubchem_input_url }}"
+    dest: "{{ root_test_dir }}/{{ input_dir }}"
+
+- name: unzip sdf
+  shell: /bin/gunzip -f {{ root_test_dir }}/{{ input_dir }}/*.gz
+
+- name: remove any hdfs test output dir 
+  become: yes
+  become_user: hadoop
+  command: /opt/hadoop/bin/hdfs dfs -rm -r -f /test
+
+- name: make fresh hdfs test dir
+  command: /opt/hadoop/bin/hdfs dfs -mkdir /test
+
+- name: make test in
+  command: /opt/hadoop/bin/hdfs dfs -mkdir {{h_tst_dir_in}}
+
+- name: copy PCA - anlaysis to local for validation of success
+  fetch: src={{ansible_env.HOME}}/out-pca-1.txt dest={{playbook_dir}}/ flat=yes
+
+- name: make test out
+  command: /opt/hadoop/bin/hdfs dfs -mkdir {{h_tst_dir_out}}
+
+- name: add sdf data to hdfs
+  shell: /opt/hadoop/bin/hdfs dfs -put {{ root_test_dir }}/{{ input_dir }}/* {{h_tst_dir_in}}
+ 
+- name: run test hadoop job
+  become: yes
+  become_user: hadoop
+  shell: /opt/hadoop/bin/yarn jar {{build_root_rem_dir}}/asl-hadoop-bd/target/asl-hadoop-bd-0.0.1-SNAPSHOT.jar fingerprints.sdf.SdfRunner -D mapred.max.split.size=2000000 -D mapreduce.child.java.opts=-Xmx1700m -D mapreduce.map.memory.mb=1800 -D mapred.reduce.tasks=0 -D mapred.max.map.failures.percent=50 -D mapreduce.job.split.metainfo.maxsize=-1 -D mapreduce.task.timeout=1200000 -libjars {{build_root_rem_dir}}/asl-hadoop-bd/lib/cdk-1.5.8.jar {{h_tst_dir_in}} {{h_tst_dir_out}}/out-1
+
+- name: copy computed data out of hadoop
+  shell: /opt/hadoop/bin/hdfs dfs -cat {{h_tst_dir_out}}/out-1/part* > {{ansible_env.HOME}}/out-1
+
+- name: fetch computed data from remote
+  fetch: src={{ansible_env.HOME}}/out-1 dest={{local_output_dir}}/ flat=yes
+
+- name: remove any previous PCA data from spark
+  command: /opt/hadoop/bin/hdfs dfs -rm -r -f /out-pca-1.txt
+
+- name: run spark PCA - analysis in 2D
+  shell: "/opt/spark/bin/spark-submit --deploy-mode cluster --num-executors 1  --driver-memory 500M --executor-memory 500M  --class 'pca.PCAReduction'   --master yarn   {{build_root_rem_dir}}/asl-hadoop-bd/target/asl-hadoop-bd-0.0.1-SNAPSHOT.jar /test/out/out-1 /out-pca-1.txt"
+  environment:
+     HADOOP_HOME: /opt/hadoop
+     HADOOP_CONF_DIR: /opt/hadoop/etc/hadoop
+
+- name: cat out hdfs PCA output to fs
+  shell: /opt/hadoop/bin/hdfs dfs -cat /out-pca-1.txt/part* > {{ansible_env.HOME}}/out-pca-1.txt
+
+- name: copy PCA - anlaysis to local for validation of success
+  fetch: src={{ansible_env.HOME}}/out-pca-1.txt dest={{local_output_dir}}/ flat=yes

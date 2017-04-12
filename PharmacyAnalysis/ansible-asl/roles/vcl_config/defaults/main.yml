@@ -1,0 +1,12 @@
+---
+
+##### leveraing template functionality ###########
+float_ip: True
+os_image: "{{ansible_env.ASL_OS_IMAGE}}" 
+# CC-Ubuntu14.04
+bds_root: "{{playbook_dir}}"
+
+
+### ansible.cfg ###
+user: "{{ansible_env.ASL_USER}}"
+#cc 

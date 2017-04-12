@@ -1,0 +1,36 @@
+---
+
+#param: set the hostname to the name defined in the inventory file
+use_ansible_inventory_hostname: false
+
+#param: the domain name
+domain_name: "local"
+
+#param: internal interface device name
+iface_internal: eth0
+
+#param: generate hosts file from inventory
+generate_hosts_file: false
+
+#param: packages to install :: [str]
+package_list: []
+
+#param: services that should be running :: [str]
+services_running: []
+
+#param: users to create :: [dict]
+# accepts the 'groups', 'createhome', and 'state' parameters of the
+# `user` ansible module
+users_managed: {}
+
+groups_managed: {}
+
+#param: authorized_keys to inject :: [dict]
+# required: `user`, `key` attributed
+authorized_keys: ''
+
+private_keys: []
+
+directories: {}
+
+cache_valid_time: "{{ 24*60*60 }}"

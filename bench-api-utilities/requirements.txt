@@ -1,0 +1,5 @@
+docopt==0.6.2
+enum34==1.1.6
+numpy==1.11.0
+-e git+https://github.com/badi/pxul@c961c25308521e3dd7db501ffbde835b0270f6b7#egg=pxul
+wheel==0.24.0

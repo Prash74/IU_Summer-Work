@@ -1,0 +1,34 @@
+---
+
+- name: drive
+  hosts: localhost
+#  tasks:
+#   - name: download big data stack
+#     git: repo=https://github.com/futuresystems/big-data-stack dest={{playbook_dir}}/big-data-stack clone=yes recursive=yes force=yes
+
+#   - name: copy ansible code from git repo to bds
+#     copy: src=../sw-project-template/bin/play-vcl-config.yml dest=./  
+
+#   - name: copy main asl ansible driver to bds from git 
+#     copy: src=../sw-project-template/ansible-asl/play-asl.yml dest=./
+#   - name: copy roles (ansible copy function doesnt do recursive right)
+#     shell: cp -r ../sw-project-template/ansible-asl/roles/* roles/
+   
+#   - name: config vcl
+#     command: ansible-playbook play-vcl-config.yml 
+   
+#   - name: boot cluster
+#     command: "{{playbook_dir}}/bin/boot-openstack-vms.sh"
+
+#   - debug: msg="sleeping 1 min so maximize chance of IPs being set up and rdy to go"
+ 
+- include: play-hadoop.yml
+- include: addons/spark.yml
+- include: play-asl.yml
+
+#   - name: play hadoop
+#     command: ansible-playbook play-hadoop.yml 
+#   - name: add on spark
+#     command: ansible-playbook addons/spark.yml 
+#   - name: play asl
+#     command: ansible-playbook play-asl.yml

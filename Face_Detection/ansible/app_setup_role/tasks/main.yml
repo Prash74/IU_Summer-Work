@@ -1,0 +1,59 @@
+---
+# tasks file for app_setup_role
+
+- name: copy detectFaces.jar 
+  copy: src=detectFaces.jar dest="{{hadoop_app_dir}}"
+  when: "'hadoop-master' in group_names"
+
+- name: copy runDetectFaces.sh
+  copy: src=runDetectFaces.sh dest="{{hadoop_app_dir}}"
+  when: "'hadoop-master' in group_names"
+
+- name: copy haar classifier
+  copy: src=haarcascade_frontalface_alt.xml dest="{{hadoop_app_dir}}"
+
+- name: copy libopencv.so
+  copy: src=libopencv_java310.so dest="{{hadoop_home}}/lib/native"
+
+- name: copy HIPI library tools
+  copy: src=hipi-tools.tar.gz dest="{{hadoop_app_dir}}/hipi-tools.tar.gz"
+  when: "'hadoop-master' in group_names"
+
+- name: untar HIPI library
+  command: "tar -zxvf {{ hadoop_app_dir }}/hipi-tools.tar.gz -C {{ hadoop_app_dir }}" 
+  when: "'hadoop-master' in group_names"
+
+- name: Add Gradle repository to sources
+  action: apt_repository repo='ppa:cwchien/gradle'
+  when: "'hadoop-master' in group_names"
+
+- name: Update APT package cache
+  action: apt update_cache=yes
+  when: "'hadoop-master' in group_names"
+
+- name: Install Gradle 2.5
+  action: apt pkg=gradle-2.5 install-recommends=yes
+  when: "'hadoop-master' in group_names"
+
+- name: Build HIPI tools
+  command: "/usr/bin/gradle -p {{ hadoop_app_dir }}/hipi-tools" 
+  when: "'hadoop-master' in group_names"
+
+- name: download image tar file
+  command: "wget {{ image_tar_url }} -O {{ hadoop_app_dir}}/{{ image_tar_file_name }}"
+  when: "'hadoop-master' in group_names"
+
+- name: untar image folder
+  command: "tar -zxvf {{ hadoop_app_dir }}/{{ image_tar_file_name }} -C {{ hadoop_app_dir }}"
+  when: "'hadoop-master' in group_names"
+
+- name: create hdfs directory
+  command: "{{ hadoop_home }}/bin/hdfs dfs -mkdir -p /user/root"
+  when: "'hadoop-master' in group_names"
+
+- name: convert images to HIPI Bundle format
+  command: "{{ hadoop_app_dir }}/hipi-tools/tools/hibImport.sh -f {{ hadoop_app_dir }}/images images.hib"
+  when: "'hadoop-master' in group_names"
+  environment:
+    PATH: "{{ ansible_env.PATH }}:/opt/hadoop/bin:/opt/hadoop/sbin"
+ 

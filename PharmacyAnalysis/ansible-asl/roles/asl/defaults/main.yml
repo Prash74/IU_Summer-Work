@@ -1,0 +1,18 @@
+---
+
+root_test_dir: "{{ ansible_env.HOME }}/asl-hadoop-bd-test"
+src_code_dir: "{{playbook_dir}}/../sw-project-template/asl-hadoop-bd"
+#src_code_dir: "{{ local_home }}/sw-project-template/asl-hadoop-bd"
+build_root_rem_dir: "{{ ansible_env.HOME }}/build-temp"
+build_src_dir: "{{build_root_dir}}/{{asl-hadoop-bd}}"
+tst_dir_in: "{{ ansible_env.HOME }}/asl-hadoop-bd-test/test/in"
+tst_dir_out: "{{ ansible_env.HOME }}/asl-hadoop-bd-test/test/out"
+h_tst_dir_in: /test/in
+h_tst_dir_out: /test/out
+asl_jar: "{{root_dir}}/target/asl-hadoop-bd-0.0.1-SNAPSHOT.jar"
+cdk_jar: "{{root_dir}}/lib/cdk-1.5.8.jar"
+asl_user: hadoop
+input_dir: "test/in"
+output_dir: /test/out
+pubchem_input_url: http://ftp.ncbi.nlm.nih.gov/pubchem/Compound/Monthly/2016-04-01/SDF/Compound_000050001_000075000.sdf.gz 
+local_output_dir: "{{playbook_dir}}/../sw-project-template/ansible-asl"

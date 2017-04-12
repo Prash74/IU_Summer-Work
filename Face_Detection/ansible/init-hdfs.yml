@@ -1,0 +1,14 @@
+---
+- hosts: hadoop-master
+  vars:
+    hadoop_user: cc
+    hadoop_cfg_path: /opt/hadoop
+  remote_user: "{{ hadoop_user }}"
+  become: yes
+ 
+  tasks:
+  - name: init hdfs 
+    command: "{{ hadoop_cfg_path }}/bin/hdfs namenode -format"
+
+ 
+

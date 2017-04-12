@@ -1,0 +1,39 @@
+---
+
+- name: common
+  hosts: all
+  become: yes
+  roles:
+
+    - role: common
+
+      use_ansible_inventory_hostname: true
+      generate_hosts_file: true
+
+      package_list:
+        - emacs24-nox
+        - curl
+        - httpie
+        - ssh
+        - rsync
+        - parted
+        - iotop
+        - facter
+
+      services_running:
+        - ssh
+
+      groups_managed:
+        hadoopadmin:
+        hadoopuser:
+
+
+- name: frontend packages
+  hosts: frontends
+  become: yes
+  roles:
+    - role: common
+      package_list:
+        - git
+        - unzip
+        - maven

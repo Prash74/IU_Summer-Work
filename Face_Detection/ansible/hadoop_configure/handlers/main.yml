@@ -1,0 +1,10 @@
+---
+
+
+- name: fix permissions
+  file:
+    path: "{{ hadoop_cfg_path }}"
+    state: directory
+    recurse: yes
+    owner: "{{ hadoop_user }}"
+    group: "{{ hadoop_user }}"

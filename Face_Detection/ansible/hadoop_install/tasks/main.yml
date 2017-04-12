@@ -1,0 +1,111 @@
+---
+
+- name: fetch hadoop
+  get_url:
+    url: "{{ hadoop_url }}"
+    dest: "{{ ansible_env.PWD }}/{{ hadoop_archive_name }}"
+    sha256sum: "{{ hadoop_archive_sha256[hadoop_version] }}"
+    timeout: "{{ hadoop_download_timeout }}"
+  tags:
+    - hadoop_install
+    - hadoop
+    - install
+
+
+- name: ensure installation destination
+  file:
+    path: "{{ hadoop_home_dir }}"
+    state: directory
+  tags:
+    - hadoop_install
+    - hadoop
+    - install
+
+
+- name: extract hadoop
+  command: tar xvf {{ hadoop_archive_name }} -C {{ hadoop_home_dir }}
+  args:
+    creates: "{{ hadoop_home_dir }}/{{ hadoop_extracted_name }}"
+  tags:
+    - hadoop_install
+    - hadoop
+    - install
+
+
+- name: create symlink shortcut
+  file:
+    src: "{{ hadoop_home_dir }}/{{ hadoop_extracted_name }}"
+    dest: "{{ hadoop_home }}"
+    state: link
+  tags:
+    - hadoop_install
+    - hadoop
+    - install
+
+
+- name: fix permissions
+  file:
+    path: "{{ hadoop_home_dir }}/{{ hadoop_extracted_name }}"
+    owner: root
+    group: root
+    recurse: yes
+    state: directory
+  tags:
+    - hadoop_install
+    - hadoop
+    - install
+
+- name: create yarn log dir
+  file:
+    path: "{{ hadoop_yarn_log_dir }}"
+    state: directory
+    owner: "{{ hadoop_user }}"
+    group: "{{ hadoop_user }}"
+  tags:
+    - hadoop_install
+    - hadoop
+    - install
+
+
+- name: set environment exports via .bashrc
+  lineinfile:
+    dest: "~/.bashrc"
+    line: "export {{ item }}"
+    create: yes
+  with_items:
+    - JAVA_HOME=/usr/lib/jvm/java-7-oracle
+    - HADOOP_COMMON_HOME={{ hadoop_home }}
+    - HADOOP_MAPRED_HOME=$HADOOP_COMMON_HOME
+    - HADOOP_HDFS_HOME=$HADOOP_COMMON_HOME
+    - YARN_HOME=$HADOOP_COMMON_HOME
+    - PATH=$PATH:$HADOOP_COMMON_HOME/bin
+    - PATH=$PATH:$HADOOP_COMMON_HOME/sbin
+    - HADOOP_CLASSPATH=$JAVA_HOME/lib/tools.jar
+  tags:
+    - hadoop_install
+    - hadoop
+    - install
+
+- name: set JAVA_HOME in hadoop-env.sh
+  action: lineinfile dest=/opt/hadoop/etc/hadoop/hadoop-env.sh regexp='export JAVA_HOME.*' line='export JAVA_HOME=/usr/lib/jvm/java-7-oracle'
+
+- name: set environment exports
+  lineinfile:
+    dest: "/etc/profile.d/hadoop.sh"
+    line: "export {{ item }}"
+    create: yes
+  with_items:
+    - HADOOP_HOME={{ hadoop_home }}
+    - HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+    - HADOOP_INSTALL=$HADOOP_HOME
+    - PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+    - HADOOP_PID_DIR=$HADOOP_HOME/pid
+    - YARN_LOG_DIR={{ hadoop_yarn_log_dir }}
+    - HADOOP_LOGLEVEL={{ hadoop_loglevel }}
+    - LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HADOOP_HOME/lib/native
+  tags:
+    - hadoop_install
+    - hadoop
+    - install
+
+

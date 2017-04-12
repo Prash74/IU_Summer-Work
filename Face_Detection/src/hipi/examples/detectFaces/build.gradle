@@ -1,0 +1,16 @@
+jar {
+  manifest {
+    attributes("Main-Class": "org.hipi.apps.detectFaces.DetectFaces")
+  }
+
+  dependencies {
+    compile project(':core')
+    compile files('./src/main/resources/opencv-310.jar')
+    compile 'org.mongodb:mongo-java-driver:2.11.3'
+  }
+
+  from {
+    configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+  }
+}
+
