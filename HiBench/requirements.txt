@@ -1,4 +1,4 @@
-ansible==2.0.1.0
+ansible==2.3.1.0
 python-novaclient==3.2.0
 python-keystoneclient==2.3.1
 traits==4.5.0
